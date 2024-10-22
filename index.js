@@ -3,6 +3,9 @@ const app = express();
 const cookieparser = require("cookie-parser");
 const cors = require("cors");
 const dbConnection = require("./config/database");
+
+
+
 require("dotenv").config();
 
 const PORT = process.env.PORT || 8000;
@@ -16,6 +19,7 @@ app.use(
 app.use(express.json()); //for parsing body
 app.use(cookieparser()); //for parsing cookie
 app.use(express.urlencoded({ extended: true }));
+
 
 // listen to port
 app.listen(PORT, () => {
