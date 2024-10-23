@@ -34,7 +34,7 @@ const PostSchema = new mongoose.Schema({
       ref: 'User'
     }
   ],
-  Author: {
+  author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
