@@ -1,29 +1,17 @@
 const mongoose = require("mongoose");
 
 const StorySchema = new mongoose.Schema({
-  content: {
+ 
+  media: {
     type: String,
-    required: true,
-  },
-  imageUrl: {
-    type: String,
+    required: true, // Ensure this field is required
     validate: {
-      validator: function (value) {
-        // Either imageUrl or videoUrl should be provided, but not both.
-        return !this.videoUrl || !value; // Return true if there's no video or image
+      validator: function(v) {
+        // Simple regex to validate image/video URLs
+        return /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|mp4|mov|avi|wmv|webm))$/i.test(v);
       },
-      message: "Post can contain either an image or a video, not both",
-    },
-  },
-  videoUrl: {
-    type: String,
-    validate: {
-      validator: function (value) {
-        // Either videoUrl or imageUrl should be provided, but not both.
-        return !this.imageUrl || !value; // Return true if there's no image or video
-      },
-      message: "Post can contain either a video or an image, not both",
-    },
+      message: props => `${props.value} is not a valid image or video URL!`
+    }
   },
   likes: [
     {
@@ -31,7 +19,7 @@ const StorySchema = new mongoose.Schema({
       ref: "User",
     },
   ],
-  Author: {
+  author: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },

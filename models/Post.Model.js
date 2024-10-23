@@ -24,8 +24,8 @@ const PostSchema = new mongoose.Schema({
   ],
   comments: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
+      text: { type: String, required: true },
+      author: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true }
     }
   ],
   shares: [

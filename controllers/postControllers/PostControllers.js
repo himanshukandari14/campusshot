@@ -242,3 +242,46 @@ exports.likePost=async(req,res)=>{
         })
   }
 }
+
+// create comment
+exports.createComment = async (req, res) => {
+  try {
+    // Get user and delete his post
+    const postId = req.params.id;
+    const userData = req.user;
+    const userId = userData.id;
+
+    const loggedInUser = await UserModel.findById(userId);
+
+    // fetch data
+    const { text } = req.body;
+
+    // current post
+    const currentPost = await PostModel.findById(postId);
+    
+    // Check if the post exists
+    if (!currentPost) {
+      return res.status(404).json({
+        success: false,
+        message: 'Post not found',
+      });
+    }
+
+    // Add the comment to the post
+    currentPost.comments.push({ text: text, author: loggedInUser._id }); // Assuming comments are objects with text and author
+    await currentPost.save(); // Save the updated post
+
+    return res.status(200).json({
+      success: true,
+      message: 'Comment added successfully',
+      currentPost,
+    });
+    
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
