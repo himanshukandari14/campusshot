@@ -13,12 +13,12 @@ const UserSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  profile:{
+  profile: {
     type: String,
   },
   bio: {
     type: String,
-   
+
     maxlength: [60, "Bio can't be short than 60 characters"],
   },
   password: {
@@ -74,16 +74,25 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: Date.now(),
   },
-  otp: { // New field for OTP
+  otp: {
+    // New field for OTP
     type: String,
   },
-  otpExpires: { // New field for OTP expiration
+  otpExpires: {
+    // New field for OTP expiration
     type: Date,
   },
-  isActive: { // New field to indicate if the user account is active
+  isActive: {
+    // New field to indicate if the user account is active
     type: Boolean,
     default: false, // Default to false until verified
   },
+  forgetPasswordOtp: {
+    type: String,
+  },
+  forgetPasswordExpires:{
+    type: Date,
+  }
 });
 
 module.exports = mongoose.model("User", UserSchema);

@@ -1,56 +1,42 @@
 const mongoose = require("mongoose");
 
 const PostSchema = new mongoose.Schema({
-  caption: {
-    type: String,
-    maxLength: [200, "Cannot store more than 200 characters"],
-  },
-  content: {
+  title: {
     type: String,
     required: true,
   },
-  imageUrl: {
+  media: {
     type: String,
+    required: true, // Ensure this field is required
     validate: {
-      validator: function (value) {
-        // Either imageUrl or videoUrl should be provided, but not both.
-        return !this.videoUrl || !value; // Return true if there's no video or image
+      validator: function(v) {
+        // Simple regex to validate image/video URLs
+        return /^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|mp4|mov|avi|wmv|webm))$/i.test(v);
       },
-      message: "Post can contain either an image or a video, not both",
-    },
+      message: props => `${props.value} is not a valid image or video URL!`
+    }
   },
-  videoUrl: {
-    type: String,
-    validate: {
-      validator: function (value) {
-        // Either videoUrl or imageUrl should be provided, but not both.
-        return !this.imageUrl || !value; // Return true if there's no image or video
-      },
-      message: "Post can contain either a video or an image, not both",
-    },
-  },
-  likes:[
+  likes: [
     {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
     }
   ],
   comments: [
     {
-        type: mongoose.Schema.Types.ObjectId,
-        ref:'User'
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
     }
   ],
-  shares:[
+  shares: [
     {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
     }
   ],
-  Author:{
-     type: mongoose.Schema.Types.ObjectId,
-     ref: 'User',
+  Author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
   },
   createdAt: {
     type: Date,

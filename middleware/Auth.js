@@ -15,7 +15,7 @@ const verifyToken = (req, res, next) => {
   try {
     // verify jwtToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // attach user info to req object
+    // attach user info to req object (this is important for getting logged in user)
     req.user = decoded.userData;
     console.log("user data attached to req:", req.user);
     next();
