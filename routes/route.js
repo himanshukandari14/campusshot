@@ -3,6 +3,8 @@ const { register, login, verifyOTP, verifyForgotPasswordOtp, forgetPassword, cha
 const { verifyToken } = require('../middleware/Auth');
 const { createPost, fetchAllPosts, fetchPosts, fetchOnePost, deleteOnePost, likePost, createComment } = require('../controllers/postControllers/PostControllers');
 const { createStory, deleteStory, fetchAllStories, fetchOneStory } = require('../controllers/storyControllers/storyControllers');
+const { searchUser, followUser, fetchFollowers, fetchFollowing, updateUserProfile } = require('../controllers/userControllers/userControllers');
+
 
 const router = express.Router();
 
@@ -17,6 +19,13 @@ router.post('/login', login);
 router.post('/forget-password', forgetPassword);// Forget password and verify forget password OTP
 router.post('/verify-forget-password-OTP', verifyForgotPasswordOtp);
 router.post('/change-password', verifyToken, changePassword); // Change password via currentPassword
+
+// user controllers
+router.get('/search-users', verifyToken, searchUser); // Define the route for searching users
+router.post('/user/follow/:id', verifyToken, followUser); // Follow/Unfollow user
+router.get('/user/followers', verifyToken, fetchFollowers); // Fetch followers
+router.get('/user/following', verifyToken, fetchFollowing); // Fetch following
+router.put('/user/update-profile', verifyToken, updateUserProfile); // Update user profile
 
 // Post controllers
 router.post('/createPost',verifyToken, createPost);

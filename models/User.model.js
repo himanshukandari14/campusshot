@@ -69,6 +69,12 @@ const UserSchema = new mongoose.Schema({
       ref: "Post",
     },
   ],
+  notifications: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Notification",
+    },
+  ],
 
   createdAt: {
     type: Date,
@@ -92,7 +98,31 @@ const UserSchema = new mongoose.Schema({
   },
   forgetPasswordExpires:{
     type: Date,
-  }
+  },
+  // New fields
+  pronouns: {
+    type: String,
+    enum: ['he/him', 'she/her', 'they/them'], // Optional pronouns
+  },
+  department: {
+     enum: ['BCA', 'BBA', 'B.Tech', 'BAJMC', 'B.Pharma', 'D.pharma'],
+  },
+  year: {
+     enum: ['1st', '2nd', '3rd', '4th'],
+  },
+  gender: {
+    type: String,
+    enum: ['male', 'female'], // Only male and female can be selected
+  },
+  age: {
+    type: Number,
+    min: 0, // Age cannot be negative
+    max: 100,
+  },
+  lastUsernameChange: {
+    type: Date,
+    default: null, // Initialize as null
+  },
 });
 
 module.exports = mongoose.model("User", UserSchema);

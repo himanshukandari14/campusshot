@@ -2,6 +2,7 @@ const PostModel = require('../../models/Post.Model');
 const UserModel = require('../../models/User.model');
 const cloudinary=require('cloudinary').v2;  
 const {cloudinaryConnect} = require('../../config/cloudinaryConfig'); // Import Cloudinary config
+const NotificationsModel = require('../../models/Notifications.model');
 
 cloudinaryConnect();
 
@@ -191,19 +192,16 @@ exports.deleteOnePost=async(req,res)=>{
     }
 }
 
-exports.likePost=async(req,res)=>{
+exports.likePost = async (req, res) => {
   try {
-     // Get user and delete his post
-    const postId=req.params.id;
+    const postId = req.params.id;
     const userData = req.user;
     const userId = userData.id;
 
-    const loggedInUser=await UserModel.findById(userId);
+    const loggedInUser = await UserModel.findById(userId);
+    const likedPost = await PostModel.findById(postId);
 
-    const likedPost= await PostModel.findById(postId);
-    console.log(likedPost);
-
-      // Check if the post exists
+    // Check if the post exists
     if (!likedPost) {
       return res.status(404).json({
         success: false,
@@ -211,37 +209,55 @@ exports.likePost=async(req,res)=>{
       });
     }
 
-   
     // Check if the user has already liked the post
     if (likedPost.likes.includes(loggedInUser._id)) {
-       likedPost.likes.pull(loggedInUser._id);
-       await likedPost.save(); // Save the updated post
-       
-       return res.status(200).json({
-        success:true,
-        message:"post unliked successfully"
-       })
+      likedPost.likes.pull(loggedInUser._id);
+      await likedPost.save(); // Save the updated post
+
+      return res.status(200).json({
+        success: true,
+        message: "Post unliked successfully"
+      });
     }
-     // Add the user ID to the likes array
+
+    // Add the user ID to the likes array
     likedPost.likes.push(loggedInUser._id);
     await likedPost.save(); // Save the updated post
 
+    // post owner's ID
+    const postOwnerId = likedPost.author; // Get the author's ID directly
+
+    // Create a new notification for the post owner
+    const notificationMessage = `User ${loggedInUser.name} liked your post.`; // Use loggedInUser's name
+    const notification = await new NotificationsModel({
+      userId: loggedInUser._id,         // The user who liked the post
+      postId: postId,                   // The post that was liked
+      recipientId: postOwnerId,         // The owner of the post
+      message: notificationMessage
+    });
+
+   
+  await notification.save();
+    console.log(notification)
+    // Push the notification ID into the post owner's notifications array
+    const postOwner = await UserModel.findById(postOwnerId);
+    postOwner.notifications.push(notification._id); // Push the notification ID
+    await postOwner.save(); // Save the updated user
+
     return res.status(200).json({
       success: true,
-      message:'Post liked successfully',
+      message: 'Post liked successfully',
       likedPost,
     });
 
-
-
   } catch (error) {
     console.log(error);
-     return res.status(500).json({
-            success:false,
-            message:'Internal server error'
-        })
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
   }
-}
+};
 
 // create comment
 exports.createComment = async (req, res) => {
@@ -271,9 +287,28 @@ exports.createComment = async (req, res) => {
     currentPost.comments.push({ text: text, author: loggedInUser._id }); // Assuming comments are objects with text and author
     await currentPost.save(); // Save the updated post
 
+     // post owner's ID
+    const postOwnerId = likedPost.author; // Get the author's ID directly
+
+    // create new notifi for user
+    const notificationMessage=`${loggedInUser} has commented on your post`
+    const notification = await new NotificationsModel({
+      userId:loggedInUser._id,
+      postId:currentPost._id,
+      message:notificationMessage,
+      recipientId:postOwnerId
+    })
+
+    await notification.save();
+     console.log(notification)
+    // Push the notification ID into the post owner's notifications array
+    const postOwner = await UserModel.findById(postOwnerId);
+    postOwner.notifications.push(notification._id); // Push the notification ID
+    await postOwner.save(); // Save the updated user
+
     return res.status(200).json({
       success: true,
-      message: 'Comment added successfully',
+      message: 'Comment added successfully and notification created',
       currentPost,
     });
     
@@ -285,3 +320,4 @@ exports.createComment = async (req, res) => {
     });
   }
 };
+
