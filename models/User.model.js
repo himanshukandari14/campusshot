@@ -1,5 +1,11 @@
 const mongoose = require("mongoose");
 
+//default avatars
+const defaultAvatars = [
+  "../assets/defaltAvatars/DA1.jpg",
+  "../assets/defaltAvatars/DA2.jpg",
+  "../assets/defaltAvatars/DA3.jpg",
+];
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -109,6 +115,12 @@ const UserSchema = new mongoose.Schema({
   },
   year: {
      enum: ['1st', '2nd', '3rd', '4th'],
+  },
+  avatar:{
+    type:String,
+    default:function(){
+      return defaultAvatars[Math.floor(Math.random() * defaultAvatars.length)];
+    }
   },
   gender: {
     type: String,

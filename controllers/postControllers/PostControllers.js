@@ -84,7 +84,7 @@ exports.createPost = async (req, res) => {
 // fetch all posts
 exports.fetchAllPosts=async(req,res)=>{
   try {
-    const allPosts= await PostModel.find();
+    const allPosts= await PostModel.find().populate('author');
 
     return res.status(200).json({
       success:true,
@@ -288,7 +288,7 @@ exports.createComment = async (req, res) => {
     await currentPost.save(); // Save the updated post
 
      // post owner's ID
-    const postOwnerId = likedPost.author; // Get the author's ID directly
+    const postOwnerId = currentPost.author; // Get the author's ID directly
 
     // create new notifi for user
     const notificationMessage=`${loggedInUser} has commented on your post`
@@ -321,3 +321,36 @@ exports.createComment = async (req, res) => {
   }
 };
 
+
+// Fetch all comments on a specific post
+exports.fetchAllComments = async (req, res) => {
+  try {
+    const postId = req.params.id;
+
+    // Find the post and populate the comments
+    const post = await PostModel.findById(postId).populate({
+      path: 'comments.author',
+      select: 'name', // Adjust the fields to retrieve as necessary
+    });
+
+    // Check if the post exists
+    if (!post) {
+      return res.status(404).json({
+        success: false,
+        message: 'Post not found',
+      });
+    }
+
+    // Return the comments for the post
+    return res.status(200).json({
+      success: true,
+      comments: post.comments,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};

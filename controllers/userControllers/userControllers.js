@@ -229,3 +229,33 @@ exports.updateUserProfile = async (req, res) => {
     });
   }
 };
+
+// Fetch logged-in user data
+exports.fetchLoggedInUserData = async (req, res) => {
+  try {
+    const userData = req.user; // Get user data from the request
+    const userId = userData.id; // Get the logged-in user's ID
+
+    // Find the user by ID and populate necessary fields if required
+    const loggedInUser = await UserModel.findById(userId);
+
+    // Check if the user exists
+    if (!loggedInUser) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user: loggedInUser, // Return the logged-in user's data
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};

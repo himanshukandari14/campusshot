@@ -7,7 +7,7 @@ const PostSchema = new mongoose.Schema({
   },
   media: {
     type: String,
-    required: true, // Ensure this field is required
+    // required: true, 
     validate: {
       validator: function(v) {
         // Simple regex to validate image/video URLs
@@ -38,6 +38,7 @@ const PostSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
   },
+  
   createdAt: {
     type: Date,
     default: Date.now,
