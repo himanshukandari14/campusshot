@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 
 //default avatars
 const defaultAvatars = [
-  "../assets/defaltAvatars/DA1.jpg",
-  "../assets/defaltAvatars/DA2.jpg",
-  "../assets/defaltAvatars/DA3.jpg",
+  "https://asset.cloudinary.com/dplbyqi1k/76ecd6f79819ec711f734cd0dfe77ff5",
+  "https://asset.cloudinary.com/dplbyqi1k/351c41bda987c3cbe5ef6862b955d6ea",
+  "https://asset.cloudinary.com/dplbyqi1k/732d589c6438fa25e79798c7fe213078",
 ];
 const UserSchema = new mongoose.Schema({
   name: {
@@ -19,8 +19,9 @@ const UserSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  profile: {
-    type: String,
+ 
+  coverPic:{
+    type:String,
   },
   bio: {
     type: String,
@@ -45,6 +46,7 @@ const UserSchema = new mongoose.Schema({
   posts: [
     {
       type: mongoose.Schema.Types.ObjectId,
+      ref:"Post"
     },
   ],
 

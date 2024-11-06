@@ -3,7 +3,7 @@ const { register, login, verifyOTP, verifyForgotPasswordOtp, forgetPassword, cha
 const { verifyToken } = require('../middleware/Auth');
 const { createPost, fetchAllPosts, fetchPosts, fetchOnePost, deleteOnePost, likePost, createComment, fetchAllComments } = require('../controllers/postControllers/PostControllers');
 const { createStory, deleteStory, fetchAllStories, fetchOneStory } = require('../controllers/storyControllers/storyControllers');
-const { searchUser, followUser, fetchFollowers, fetchFollowing, updateUserProfile, fetchLoggedInUserData } = require('../controllers/userControllers/userControllers');
+const { searchUser, followUser, fetchFollowers, fetchFollowing, updateUserProfile, fetchLoggedInUserData, fetchSpecificUser } = require('../controllers/userControllers/userControllers');
 
 
 const router = express.Router();
@@ -27,6 +27,7 @@ router.get('/user/followers', verifyToken, fetchFollowers); // Fetch followers
 router.get('/user/following', verifyToken, fetchFollowing); // Fetch following
 router.put('/user/update-profile', verifyToken, updateUserProfile); // Update user profile
 router.get('/fetchLoggedInUser',verifyToken,fetchLoggedInUserData);
+router.get('/users/:id',verifyToken,fetchSpecificUser);
 
 // Post controllers
 router.post('/createPost',verifyToken, createPost);

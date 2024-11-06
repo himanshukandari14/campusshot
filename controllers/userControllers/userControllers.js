@@ -237,7 +237,7 @@ exports.fetchLoggedInUserData = async (req, res) => {
     const userId = userData.id; // Get the logged-in user's ID
 
     // Find the user by ID and populate necessary fields if required
-    const loggedInUser = await UserModel.findById(userId);
+    const loggedInUser = await UserModel.findById(userId).populate('posts').lean()
 
     // Check if the user exists
     if (!loggedInUser) {
@@ -250,6 +250,37 @@ exports.fetchLoggedInUserData = async (req, res) => {
     return res.status(200).json({
       success: true,
       user: loggedInUser, // Return the logged-in user's data
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+    });
+  }
+};
+
+
+// Fetch specific user data by user ID
+exports.fetchSpecificUser = async (req, res) => {
+  try {
+    const userIdToFetch = req.params.id; // ID of the user to fetch
+    console.log(userIdToFetch)
+
+    // Find the user by ID and populate necessary fields if required
+    const user = await UserModel.findById(userIdToFetch).populate('followers following', 'name username profile').lean();
+
+    // Check if the user exists
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      user, // Return the fetched user's data
     });
   } catch (error) {
     console.log(error);
